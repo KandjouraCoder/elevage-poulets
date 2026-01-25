@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lot{% endblock %}
+
+{% block body %}
+    <h1>Lot</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ lot.id }}</td>
+            </tr>
+            <tr>
+                <th>Reference</th>
+                <td>{{ lot.reference }}</td>
+            </tr>
+            <tr>
+                <th>DateEntree</th>
+                <td>{{ lot.dateEntree ? lot.dateEntree|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>NombreInitial</th>
+                <td>{{ lot.nombreInitial }}</td>
+            </tr>
+            <tr>
+                <th>CreateAt</th>
+                <td>{{ lot.createdAt ? lot.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_lot_index') }}">back to list</a>
+
+    <a href="{{ path('app_lot_edit', {'id': lot.id}) }}">edit</a>
+
+    {{ include('lot/_delete_form.html.twig') }}
+{% endblock %}

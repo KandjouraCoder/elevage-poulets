@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Mortalite{% endblock %}
+
+{% block body %}
+    <h1>Create new Mortalite</h1>
+
+    {{ include('mortalite/_form.html.twig') }}
+
+    <a href="{{ path('app_mortalite_index') }}">back to list</a>
+{% endblock %}

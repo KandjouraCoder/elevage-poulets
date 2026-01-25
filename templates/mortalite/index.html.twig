@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mortalite index{% endblock %}
+
+{% block body %}
+    <h1>Mortalite index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Cause</th>
+                <th>Date</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for mortalite in mortalites %}
+            <tr>
+                <td>{{ mortalite.id }}</td>
+                <td>{{ mortalite.nombre }}</td>
+                <td>{{ mortalite.cause }}</td>
+                <td>{{ mortalite.date ? mortalite.date|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_mortalite_show', {'id': mortalite.id}) }}">show</a>
+                    <a href="{{ path('app_mortalite_edit', {'id': mortalite.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_mortalite_new') }}">Create new</a>
+{% endblock %}

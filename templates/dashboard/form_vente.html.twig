@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter Vente{% endblock %}
+
+{% block body %}
+<h1>Ajouter Vente pour le lot {{ lot.reference }}</h1>
+
+{{ form_start(formVente) }}
+{{ form_widget(formVente) }}
+<button type="submit">Ajouter</button>
+{{ form_end(formVente) }}
+
+<a href="{{ path('dashboard') }}">Retour au Dashboard</a>
+{% endblock %}

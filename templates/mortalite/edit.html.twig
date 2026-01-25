@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Mortalite{% endblock %}
+
+{% block body %}
+    <h1>Edit Mortalite</h1>
+
+    {{ include('mortalite/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_mortalite_index') }}">back to list</a>
+
+    {{ include('mortalite/_delete_form.html.twig') }}
+{% endblock %}

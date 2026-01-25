@@ -8,3 +8,62 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
+
+###> symfony/asset-mapper ###
+/public/assets/
+/assets/vendor/
+###< symfony/asset-mapper ###
+
+
+# ------------------------
+# Symfony / PHP
+# ------------------------
+/var/
+/vendor/
+/node_modules/
+/public/build/
+/.env
+/.env.local
+/.env.test
+/.env.*.local
+
+# ------------------------
+# Logs
+# ------------------------
+/var/log/
+/var/cache/
+
+# ------------------------
+# IDE / Editor
+# ------------------------
+.idea/
+.vscode/
+*.iml
+
+# ------------------------
+# OS
+# ------------------------
+.DS_Store
+Thumbs.db
+
+# ------------------------
+# Composer
+# ------------------------
+composer.lock
+
+# ------------------------
+# npm / yarn / pnpm
+# ------------------------
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ------------------------
+# Symfony profiler / debug
+# ------------------------
+/var/debug/
