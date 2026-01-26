@@ -27,11 +27,9 @@ class Lot
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $createdAt = null;
 
-    // Relation Mortalite
     #[ORM\OneToMany(mappedBy: 'lot', targetEntity: Mortalite::class, orphanRemoval: true, cascade: ["persist"])]
     private Collection $mortalites;
 
-    // Relation Vente
     #[ORM\OneToMany(mappedBy: 'lot', targetEntity: Vente::class, orphanRemoval: true, cascade: ["persist"])]
     private Collection $ventes;
 
@@ -41,7 +39,7 @@ class Lot
         $this->ventes = new ArrayCollection();
     }
 
-    // ================= Getters / Setters =================
+    // ========== Getters / Setters ==========
 
     public function getId(): ?int { return $this->id; }
     public function getReference(): ?string { return $this->reference; }
@@ -53,45 +51,65 @@ class Lot
     public function getCreatedAt(): ?\DateTimeInterface { return $this->createdAt; }
     public function setCreatedAt(\DateTimeInterface $createdAt): self { $this->createdAt = $createdAt; return $this; }
 
-    // ================= Mortalite =================
-    /**
-     * @return Collection<int, Mortalite>
-     */
+    // ========== Mortalite ==========
+
     public function getMortalites(): Collection { return $this->mortalites; }
-    public function addMortalite(Mortalite $mortalite): self { 
-        if (!$this->mortalites->contains($mortalite)) { 
-            $this->mortalites->add($mortalite); 
-            $mortalite->setLot($this); 
-        } 
-        return $this; 
+    public function addMortalite(Mortalite $mortalite): self
+    {
+        if (!$this->mortalites->contains($mortalite)) {
+            $this->mortalites->add($mortalite);
+            $mortalite->setLot($this);
+        }
+        return $this;
     }
-    public function removeMortalite(Mortalite $mortalite): self { 
-        if ($this->mortalites->removeElement($mortalite)) { 
-            if ($mortalite->getLot() === $this) { 
-                $mortalite->setLot(null); 
-            } 
-        } 
-        return $this; 
+    public function removeMortalite(Mortalite $mortalite): self
+    {
+        if ($this->mortalites->removeElement($mortalite)) {
+            if ($mortalite->getLot() === $this) {
+                $mortalite->setLot(null);
+            }
+        }
+        return $this;
     }
 
-    // ================= Vente =================
-    /**
-     * @return Collection<int, Vente>
-     */
+    // ========== Vente ==========
+
     public function getVentes(): Collection { return $this->ventes; }
-    public function addVente(Vente $vente): self { 
-        if (!$this->ventes->contains($vente)) { 
-            $this->ventes->add($vente); 
-            $vente->setLot($this); 
-        } 
-        return $this; 
+    public function addVente(Vente $vente): self
+    {
+        if (!$this->ventes->contains($vente)) {
+            $this->ventes->add($vente);
+            $vente->setLot($this);
+        }
+        return $this;
     }
-    public function removeVente(Vente $vente): self { 
-        if ($this->ventes->removeElement($vente)) { 
-            if ($vente->getLot() === $this) { 
-                $vente->setLot(null); 
-            } 
-        } 
-        return $this; 
+    public function removeVente(Vente $vente): self
+    {
+        if ($this->ventes->removeElement($vente)) {
+            if ($vente->getLot() === $this) {
+                $vente->setLot(null);
+            }
+        }
+        return $this;
+    }
+
+    // ========== Méthodes utiles ==========
+
+    public function getTotalVendus(): int
+    {
+        $total = 0;
+        foreach ($this->ventes as $vente) {
+            $total += $vente->getNombre();
+        }
+        return $total;
+    }
+
+    public function getSommeVentes(): float
+    {
+        $total = 0;
+        foreach ($this->ventes as $vente) {
+            $total += $vente->getNombre() * $vente->getPrixUnitaire();
+        }
+        return $total;
     }
 }

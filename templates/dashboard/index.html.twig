@@ -5,10 +5,6 @@
 {% block body %}
 <h1>Dashboard Poulets</h1>
 
-{% for message in app.flashes('success') %}
-    <div style="color:green;">{{ message }}</div>
-{% endfor %}
-
 <table border="1" cellpadding="8" cellspacing="0">
     <thead>
         <tr>
@@ -18,28 +14,31 @@
             <th>Morts</th>
             <th>Vendus</th>
             <th>Stock Vivant</th>
+            <th>Somme Ventes (€)</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-        {% for row in lotsData %}
+        {% for lotData in lotsData %}
             <tr>
-                <td>{{ row.lot.reference }}</td>
-                <td>{{ row.lot.dateEntree|date('Y-m-d') }}</td>
-                <td>{{ row.lot.nombreInitial }}</td>
-                <td>{{ row.morts }}</td>
-                <td>{{ row.vendus }}</td>
-                <td>{{ row.stockVivant }}</td>
+                <td>{{ lotData.lot.reference }}</td>
+                <td>{{ lotData.lot.dateEntree|date('Y-m-d') }}</td>
+                <td>{{ lotData.lot.nombreInitial }}</td>
+                <td>{{ lotData.morts }}</td>
+                <td>{{ lotData.vendus }}</td>
+                <td>{{ lotData.stockVivant }}</td>
+                <td>{{ lotData.sommeVentes|number_format(2, ',', ' ') }}</td>
                 <td>
-                    <a href="{{ path('ajouter_mortalite', {'id': row.lot.id}) }}">
-                        <button>Ajouter Mort</button>
-                    </a>
-                    <a href="{{ path('ajouter_vente', {'id': row.lot.id}) }}">
-                        <button>Ajouter Vente</button>
-                    </a>
+                    <a href="{{ path('ajouter_mortalite', {'id': lotData.lot.id}) }}">Ajouter mortalité</a> |
+                    <a href="{{ path('ajouter_vente', {'id': lotData.lot.id}) }}">Ajouter vente</a> |
+                    <a href="{{ path('historique_ventes', {'id': lotData.lot.id}) }}">Voir historique</a>
                 </td>
             </tr>
         {% endfor %}
+        <tr>
+            <td colspan="6" style="text-align:right"><strong>Total général :</strong></td>
+            <td colspan="2"><strong>{{ totalGeneral|number_format(2, ',', ' ') }} €</strong></td>
+        </tr>
     </tbody>
 </table>
 {% endblock %}
