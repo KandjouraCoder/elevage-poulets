@@ -8,37 +8,76 @@
 <table border="1" cellpadding="8" cellspacing="0">
     <thead>
         <tr>
-            <th>Référence Lot</th>
-            <th>Date Entrée</th>
-            <th>Nombre Initial</th>
+            <th>Lot</th>
+            <th>Date entrée</th>
+            <th>Initial</th>
             <th>Morts</th>
             <th>Vendus</th>
-            <th>Stock Vivant</th>
-            <th>Somme Ventes (€)</th>
+            <th>Stock vivant</th>
+            <th>Somme ventes (FCFA)</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         {% for lotData in lotsData %}
-            <tr>
-                <td>{{ lotData.lot.reference }}</td>
-                <td>{{ lotData.lot.dateEntree|date('Y-m-d') }}</td>
-                <td>{{ lotData.lot.nombreInitial }}</td>
-                <td>{{ lotData.morts }}</td>
-                <td>{{ lotData.vendus }}</td>
-                <td>{{ lotData.stockVivant }}</td>
-                <td>{{ lotData.sommeVentes|number_format(2, ',', ' ') }}</td>
-                <td>
-                    <a href="{{ path('ajouter_mortalite', {'id': lotData.lot.id}) }}">Ajouter mortalité</a> |
-                    <a href="{{ path('ajouter_vente', {'id': lotData.lot.id}) }}">Ajouter vente</a> |
-                    <a href="{{ path('historique_ventes', {'id': lotData.lot.id}) }}">Voir historique</a>
-                </td>
-            </tr>
+        <tr>
+            <td>{{ lotData.lot.reference }}</td>
+            <td>{{ lotData.lot.dateEntree|date('Y-m-d') }}</td>
+            <td>{{ lotData.lot.nombreInitial }}</td>
+            <td>{{ lotData.morts }}</td>
+            <td>{{ lotData.vendus }}</td>
+            <td>{{ lotData.stockVivant }}</td>
+            <td>{{ lotData.sommeVentes|number_format(0, ',', ' ') }}</td>
+            <td>
+                <a href="{{ path('ajouter_mortalite', {id: lotData.lot.id}) }}">➕ Mortalités</a> |
+                <a href="{{ path('ajouter_vente', {id: lotData.lot.id}) }}">➕ Vente</a> |
+                <a href="{{ path('historique_ventes', {id: lotData.lot.id}) }}">📜 Historique</a>
+            </td>
+        </tr>
         {% endfor %}
         <tr>
-            <td colspan="6" style="text-align:right"><strong>Total général :</strong></td>
-            <td colspan="2"><strong>{{ totalGeneral|number_format(2, ',', ' ') }} €</strong></td>
+            <td colspan="3" style="text-align:right"><strong>Total :</strong></td>
+            <td><strong>{{ totalMorts }}</strong></td>
+            <td><strong>{{ totalVendus }}</strong></td>
+            <td></td>
+            <td><strong>{{ totalVentes|number_format(0, ',', ' ') }}</strong></td>
+            <td></td>
         </tr>
     </tbody>
 </table>
+
+<h2>📊 Ventes par lot</h2>
+<canvas id="venteChart"></canvas>
+
+<h2>☠️ Mortalités par lot</h2>
+<canvas id="mortaliteChart"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const labels = {{ labels|json_encode|raw }};
+
+new Chart(document.getElementById('venteChart'), {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Ventes (FCFA)',
+            data: {{ dataVentes|json_encode|raw }},
+            backgroundColor: 'rgba(54,162,235,0.6)'
+        }]
+    }
+});
+
+new Chart(document.getElementById('mortaliteChart'), {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Mortalités',
+            data: {{ dataMortalites|json_encode|raw }},
+            backgroundColor: 'rgba(255,99,132,0.6)'
+        }]
+    }
+});
+</script>
 {% endblock %}

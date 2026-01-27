@@ -24,6 +24,10 @@ class DashboardController extends AbstractController
         $lotsData = [];
         $totalGeneral = 0;
 
+        $labels = [];
+        $dataVentes = [];
+        $dataMortalites = [];
+
         foreach ($lots as $lot) {
             $totalMorts = array_sum(array_map(fn($m) => $m->getNombre(), $lot->getMortalites()->toArray()));
             $totalVendus = array_sum(array_map(fn($v) => $v->getNombre(), $lot->getVentes()->toArray()));
@@ -42,55 +46,103 @@ class DashboardController extends AbstractController
                 'stockVivant' => $stockService->calculerVivants($lot),
                 'sommeVentes' => $sommeVentes,
             ];
+
+            // Graphiques
+            $labels[] = $lot->getReference();
+            $dataVentes[] = $sommeVentes;
+            $dataMortalites[] = $totalMorts;
         }
+
+        // Calcul des totaux pour le tableau
+        $totalMorts = array_sum(array_map(fn($l) => $l['morts'], $lotsData));
+        $totalVendus = array_sum(array_map(fn($l) => $l['vendus'], $lotsData));
+        $totalVentes = array_sum(array_map(fn($l) => $l['sommeVentes'], $lotsData));
 
         return $this->render('dashboard/index.html.twig', [
             'lotsData' => $lotsData,
             'totalGeneral' => $totalGeneral,
+            'labels' => $labels,
+            'dataVentes' => $dataVentes,
+            'dataMortalites' => $dataMortalites,
+            'totalMorts' => $totalMorts,
+            'totalVendus' => $totalVendus,
+            'totalVentes' => $totalVentes,
         ]);
     }
 
     #[Route('/lot/{id}/ajouter-mortalite', name: 'ajouter_mortalite')]
-    public function ajouterMortalite(Request $request, Lot $lot, EntityManagerInterface $em): Response
+    public function ajouterMortalite(Request $request, Lot $lot, EntityManagerInterface $em, StockService $stockService): Response
     {
+        $stockVivant = $stockService->calculerVivants($lot);
+
+        if ($stockVivant <= 0) {
+            $this->addFlash('error', 'Impossible : aucun poulet en stock');
+            return $this->redirectToRoute('dashboard');
+        }
+
         $mortalite = new Mortalite();
         $mortalite->setLot($lot);
 
-        $form = $this->createForm(MortaliteType::class, $mortalite);
+        $form = $this->createForm(MortaliteType::class, $mortalite, [
+            'stock_max' => $stockVivant
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($mortalite->getNombre() > $stockVivant) {
+                $this->addFlash('error', "Stock insuffisant ({$stockVivant})");
+                return $this->redirectToRoute('dashboard');
+            }
+
             $em->persist($mortalite);
             $em->flush();
-            $this->addFlash('success', "Mortalité ajoutée pour le lot {$lot->getReference()}");
+
+            $this->addFlash('success', 'Mortalité enregistrée');
             return $this->redirectToRoute('dashboard');
         }
 
         return $this->render('dashboard/form_mortalite.html.twig', [
             'formMortalite' => $form->createView(),
             'lot' => $lot,
+            'stockVivant' => $stockVivant,
         ]);
     }
 
     #[Route('/lot/{id}/ajouter-vente', name: 'ajouter_vente')]
-    public function ajouterVente(Request $request, Lot $lot, EntityManagerInterface $em): Response
+    public function ajouterVente(Request $request, Lot $lot, EntityManagerInterface $em, StockService $stockService): Response
     {
+        $stockVivant = $stockService->calculerVivants($lot);
+
+        if ($stockVivant <= 0) {
+            $this->addFlash('error', 'Impossible : aucun poulet en stock');
+            return $this->redirectToRoute('dashboard');
+        }
+
         $vente = new Vente();
         $vente->setLot($lot);
 
-        $form = $this->createForm(VenteType::class, $vente);
+        $form = $this->createForm(VenteType::class, $vente, [
+            'stock_max' => $stockVivant
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($vente->getNombre() > $stockVivant) {
+                $this->addFlash('error', "Stock insuffisant ({$stockVivant})");
+                return $this->redirectToRoute('dashboard');
+            }
+
             $em->persist($vente);
             $em->flush();
-            $this->addFlash('success', "Vente ajoutée pour le lot {$lot->getReference()}");
+
+            $this->addFlash('success', 'Vente enregistrée');
             return $this->redirectToRoute('dashboard');
         }
 
         return $this->render('dashboard/form_vente.html.twig', [
             'formVente' => $form->createView(),
             'lot' => $lot,
+            'stockVivant' => $stockVivant,
         ]);
     }
 
@@ -98,7 +150,7 @@ class DashboardController extends AbstractController
     public function historiqueVentes(Lot $lot): Response
     {
         $ventes = $lot->getVentes()->toArray();
-        usort($ventes, fn($a, $b) => $b->getDate() <=> $a->getDate()); // Trier par date décroissante
+        usort($ventes, fn($a, $b) => $b->getDate() <=> $a->getDate());
 
         return $this->render('dashboard/historique_ventes.html.twig', [
             'lot' => $lot,
