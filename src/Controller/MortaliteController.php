@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Mortalite;
+use App\Entity\Lot;
 use App\Form\MortaliteType;
 use App\Repository\MortaliteRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -77,5 +78,25 @@ final class MortaliteController extends AbstractController
         }
 
         return $this->redirectToRoute('app_mortalite_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    // ================================
+    // 🔥 NOUVELLE ROUTE : HISTORIQUE PAR LOT
+    // ================================
+    #[Route('/lot/{id}/historique', name: 'historique_mortalites', methods: ['GET'])]
+    public function historiqueParLot(Lot $lot): Response
+    {
+        $mortalites = $lot->getMortalites();
+
+        $totalMorts = 0;
+        foreach ($mortalites as $m) {
+            $totalMorts += $m->getNombre();
+        }
+
+        return $this->render('mortalite/historique.html.twig', [
+            'lot' => $lot,
+            'mortalites' => $mortalites,
+            'totalMorts' => $totalMorts,
+        ]);
     }
 }

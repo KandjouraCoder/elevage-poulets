@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique des mortalités{% endblock %}
+
+{% block body %}
+<h1>☠️ Historique des mortalités</h1>
+
+<p>
+    <strong>Lot :</strong> {{ lot.reference }} <br>
+    <strong>Date d’entrée :</strong> {{ lot.dateEntree|date('Y-m-d') }}
+</p>
+
+<table border="1" cellpadding="8" cellspacing="0" width="60%">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Nombre de morts</th>
+            <th>Cause</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for m in mortalites %}
+        <tr>
+            <td>{{ m.date|date('Y-m-d') }}</td>
+            <td>{{ m.nombre }}</td>
+            <td>{{ m.cause ?: '-' }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3" align="center">Aucune mortalité enregistrée</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr style="font-weight:bold;background:#f2f2f2">
+            <td>Total</td>
+            <td>{{ totalMorts }}</td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>
+
+<br>
+<a href="{{ path('dashboard') }}">⬅️ Retour au dashboard</a>
+{% endblock %}

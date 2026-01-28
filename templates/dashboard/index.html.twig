@@ -32,6 +32,7 @@
                 <a href="{{ path('ajouter_mortalite', {id: lotData.lot.id}) }}">➕ Mortalités</a> |
                 <a href="{{ path('ajouter_vente', {id: lotData.lot.id}) }}">➕ Vente</a> |
                 <a href="{{ path('historique_ventes', {id: lotData.lot.id}) }}">📜 Historique</a>
+                <a href="{{ path('historique_mortalites', {id: lotData.lot.id}) }}">☠️ Hist. mortalités</a>
             </td>
         </tr>
         {% endfor %}
